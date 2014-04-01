@@ -64,12 +64,12 @@ public class KetamaTest extends Assert
         for(int i = 0; i < 1000000; i++)
         {
             String key = "key-" + i;
-            ketamaRes.put(key, ketama.getNode(key));
+            ketamaRes.put(key, ketama.getNode(key.getBytes()));
         }
         
         for(Map.Entry<String, KetamaNode> entry : ketamaRes.entrySet())
         {
-            assertTrue(entry.getValue().equals(ketama.getNode(entry.getKey())));
+            assertTrue(entry.getValue().equals(ketama.getNode(entry.getKey().getBytes())));
         }
     }
     
@@ -89,9 +89,9 @@ public class KetamaTest extends Assert
         for(int i = 0; i < 1000; i++)
         {
             String key = "key-" + i;
-            KetamaNode node = ketama.getNode(key);
+            KetamaNode node = ketama.getNode(key.getBytes());
             assertNotNull(node);
-            ketamaRes.put(key, ketama.getNode(key));
+            ketamaRes.put(key, ketama.getNode(key.getBytes()));
             
             Integer cnt = ketamaRes2.get(node.getNodeString());
             if(cnt == null)

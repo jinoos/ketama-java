@@ -16,6 +16,7 @@ public class Ketama
     // Constants
     public static final int NATIVE_HASH = 0;                    // native String.hashCode();
     public static final int KETAMA_HASH = 1;                    // MD5 Based
+    public static final int DEFAULT_WEIGHT = 100;
 
     private int hashingAlg = KETAMA_HASH;
     
@@ -42,19 +43,7 @@ public class Ketama
         
         nodes.add(node);
     }
-    
-/*    public void setNodes(List<KetamaNode> nodes) throws IllegalStateException
-    {
-        if(initialized)
-            throw new IllegalStateException("This instance initialized already.");
-        
-        if(nodes.size() == 0)
-            return;
-        
-        this.nodes = nodes;
-        initialized = false;
-    }*/
-    
+
     public List<KetamaNode> getNodes()
     {
         return this.nodes;
@@ -62,9 +51,6 @@ public class Ketama
     
     public boolean initialize() throws IllegalStateException
     {
-        if(nodes.size() == 0)
-            throw new IllegalStateException("Nothing in node list.");
-            
         if(initialized)
             throw new IllegalStateException("This instance already initialized.");
         
@@ -97,7 +83,6 @@ public class Ketama
                         | ((long)(d[1+h*4]&0xFF) << 8)
                         | ((long)(d[0+h*4]&0xFF));
                     buckets.put(k, n);
-                    log.debug("Added " + nodeString + " to server bucket." );
                 }               
             }
         }
@@ -107,16 +92,32 @@ public class Ketama
         return true;
     }
     
-    public KetamaNode getNode(String key) throws IllegalStateException
+    public KetamaNode getNode(byte[] key) throws IllegalStateException
     {
         if(!initialized)
             throw new IllegalStateException("Not initialized instance.");
         
+        if(nodes.size() == 0)
+            throw new IllegalStateException("Empty available node");
+        
         Long hv = this.calculateHash(key);
         KetamaNode node = buckets.get(this.findPointFor(hv));
-//        String server = buckets.get(this.findPointFor(hv));
-        log.debug("Node choose " + node.getNodeString() + " for " + key);
+        if(log.isDebugEnabled())
+        {
+            String keyStr = new String(key);
+            log.debug("Node choose " + node.getNodeString() + " for " + keyStr);
+        }
         return node;
+    }
+    
+    public void destory()
+    {
+        if(initialized)
+        {
+            initialized = false;
+            buckets.remove(null);
+            
+        }
     }
 
     private Long findPointFor(Long hashK) {
@@ -130,7 +131,7 @@ public class Ketama
         return k;
     }
     
-    private Long calculateHash(String key) {
+    private Long calculateHash(byte[] key) {
         
         switch ( hashingAlg ) {
             case NATIVE_HASH:
@@ -144,7 +145,7 @@ public class Ketama
         }       
     }   
     
-    private static Long md5HashingAlg(String key) {
+    private static Long md5HashingAlg(byte[] key) {
         MessageDigest md5 = null;
         try {
             md5 = MessageDigest.getInstance("MD5");
@@ -153,7 +154,7 @@ public class Ketama
             throw new IllegalStateException("No md5 algorythm found");
         }
         md5.reset();
-        md5.update(key.getBytes());
+        md5.update(key);
         byte[] bKey = md5.digest();
         long res = ((long) (bKey[3] & 0xFF) << 24)
                 | ((long) (bKey[2] & 0xFF) << 16)

@@ -1,10 +1,11 @@
 package com.jinoos.util;
 
-public interface KetamaNode
+import java.io.Serializable;
+
+public interface KetamaNode extends Serializable
 {
-//    public boolean equals(KetamaNode n);
-    
     public String getNodeString();
-    
+    public String getHost();
+    public int getPort();
     public int getWeight();
 }

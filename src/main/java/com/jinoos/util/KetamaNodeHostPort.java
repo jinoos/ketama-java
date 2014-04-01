@@ -2,38 +2,40 @@ package com.jinoos.util;
 
 public class KetamaNodeHostPort implements KetamaNode
 {
+    private static final long serialVersionUID = 3333676027962754325L;
+
     public static int DEFAULT_WEIGHT = 1;
     
-    private String ip;
+    private String host;
     private int    port;
     private int    weight;
     
-    private void _ketamaNode(String ip, int port, int weight)
+    private void _ketamaNode(String host, int port, int weight)
     {
-        this.ip = ip;
+        this.host = host;
         this.port = port;
         this.weight = weight;
     }
     
     public KetamaNodeHostPort(KetamaNodeHostPort n)
     {
-        _ketamaNode(n.getIp(), n.getPort(), n.getWeight());
+        _ketamaNode(n.getHost(), n.getPort(), n.getWeight());
     }
 
-    public KetamaNodeHostPort(String ip, int port)
+    public KetamaNodeHostPort(String host, int port)
     {
-        _ketamaNode(ip, port, DEFAULT_WEIGHT);
+        _ketamaNode(host, port, DEFAULT_WEIGHT);
     }
     
 
-    public KetamaNodeHostPort(String ip, int port, int weight)
+    public KetamaNodeHostPort(String host, int port, int weight)
     {
-        _ketamaNode(ip, port, weight);
+        _ketamaNode(host, port, weight);
     }
     
     public String getNodeString()
     {
-        return new String(ip + ":" + port);
+        return new String(host + ":" + port);
     }
     
     public boolean equals(KetamaNode o)
@@ -44,14 +46,14 @@ public class KetamaNodeHostPort implements KetamaNode
         return this.getNodeString().equals(o.getNodeString());
     }
 
-    public String getIp()
+    public String getHost()
     {
-        return ip;
+        return host;
     }
 
-    public void setIp(String ip)
+    public void setHost(String host)
     {
-        this.ip = ip;
+        this.host = host;
     }
 
     public int getPort()
